@@ -138,9 +138,7 @@ export const config = {
 
   colorOfDay: [
     { name: "Purple", hex: "#5B2C6F" },
-    { name: "Plum",   hex: "#6E1D4B" },
     { name: "Lilac",  hex: "#C5B4E3" },
-    { name: "Pink",   hex: "#F4A8C1" },
     { name: "Blush",  hex: "#FFD6E0" },
   ],
 
