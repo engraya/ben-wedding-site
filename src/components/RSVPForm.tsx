@@ -2,18 +2,19 @@ import { useState, useRef } from "react";
 import { config } from "@/config";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Loader2, Heart, ChevronDown, Info, Video, Users, 
-  Camera, EyeOff, AlertTriangle 
+import {
+  Loader2, Heart, ChevronDown, Info, Video, Users,
+  EyeOff, AlertTriangle
 } from "lucide-react";
 import { GiftRegistry } from "./GiftRegistry";
 
 const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
 
-// RSVP closed: May 2 2026 deadline, and always closed after wedding day
-const RSVP_CLOSES_AT = new Date("2026-05-02T23:59:59Z");
-const WEDDING_DAY    = new Date("2026-05-30T12:00:00Z");
-const rsvpIsClosed   = new Date() > RSVP_CLOSES_AT || new Date() > WEDDING_DAY;
+// RSVP closes at the configured deadline, or always on the wedding day.
+const WEDDING_DAY    = new Date(config.eventStartUTC);
+const RSVP_CLOSES_AT = config.rsvpClosesAtUTC ? new Date(config.rsvpClosesAtUTC) : null;
+const rsvpIsClosed   =
+  new Date() > WEDDING_DAY || (RSVP_CLOSES_AT !== null && new Date() > RSVP_CLOSES_AT);
 
 interface FormData {
   attendanceType: "physical" | "virtual";
@@ -23,8 +24,6 @@ interface FormData {
   relationship: string;
   guests: string;
   guestName: string;
-  dietary: string;
-  mediaConsent: "full" | "none";
   message: string;
 }
 
@@ -94,8 +93,6 @@ export const RSVPForm = () => {
     relationship: "",
     guests: "",
     guestName: "",
-    dietary: "",
-    mediaConsent: "full",
     message: "",
   });
 
@@ -217,8 +214,6 @@ export const RSVPForm = () => {
       const payload = {
         ...formData,
         guests: formData.attendanceType === "virtual" ? "1" : formData.guests,
-        dietary: formData.attendanceType === "virtual" ? "N/A" : formData.dietary,
-        mediaConsent: formData.attendanceType === "virtual" ? "N/A" : formData.mediaConsent,
         attendance: "Confirmed",
         timestamp: new Date().toISOString(),
       };
@@ -324,7 +319,7 @@ export const RSVPForm = () => {
           <h2 className="font-display text-8xl md:text-9xl text-black dark:text-white mt-4 mb-2 tracking-tighter uppercase leading-none">RSVP</h2>
 
           <div className="text-black/60 dark:text-white/60 space-y-1 text-sm md:text-base mt-6">
-            <p>Please respond by <span className="text-black dark:text-white font-medium">May 2, 2026</span>.</p>
+            <p>Please respond by <span className="text-black dark:text-white font-medium">{config.rsvpDeadlineDisplay}</span>.</p>
             {config.guestCapacity > 0 && (
               <p>Seating is strictly limited to <span className="text-black dark:text-white font-medium">{config.guestCapacity} guests</span>.</p>
             )}
@@ -446,8 +441,8 @@ export const RSVPForm = () => {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  {/* Guest Count & Dietary */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Guest Count */}
+                  <div className="mb-6">
                     <div className="space-y-2" data-error={!!errors.guests}>
                       <label className="text-[10px] uppercase tracking-[0.2em] text-black/60 dark:text-white/40 font-bold">GUEST COUNT *</label>
                       <div className="relative">
@@ -483,47 +478,6 @@ export const RSVPForm = () => {
                           <ErrorMsg field="guestName" />
                         </div>
                       )}
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-black/60 dark:text-white/40 font-bold">DIETARY REQUIREMENTS</label>
-                      <input
-                        type="text"
-                        name="dietary"
-                        value={formData.dietary}
-                        onChange={handleChange}
-                        className="w-full bg-white dark:bg-[#161616] border border-gray-300 dark:border-white/5 rounded-lg px-4 py-3.5 text-black dark:text-white transition-colors focus:outline-none"
-                        placeholder="Include allergies if any"
-                      />
-                    </div>
-                  </div>
-
-                  {/* MEDIA CONSENT */}
-                  <div className="mb-10 p-8 rounded-xl bg-gray-100/30 dark:bg-white/5 border border-gray-300 dark:border-white/5 transition-colors">
-                    <div className="flex items-start gap-4 mb-8">
-                      <Camera className="w-5 h-5 text-black/40 dark:text-white/40 mt-1" />
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-black dark:text-white uppercase tracking-wide">Media & Privacy Preferences</h4>
-                        <p className="text-[11px] text-black/40 dark:text-white/40 leading-relaxed">
-                          Photographers, videographers, and a live stream will be present. If you prefer <span className="text-black dark:text-white font-bold italic">not</span> to be captured, choose "No Consent" for a Privacy Zone seat.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-6 ml-9">
-                      <label className="flex items-start gap-4 cursor-pointer group">
-                        <input type="radio" name="mediaConsent" value="full" checked={formData.mediaConsent === "full"} onChange={handleChange} className="mt-1 accent-black dark:accent-white h-4 w-4" />
-                        <div className="space-y-1">
-                          <span className="text-[12px] font-bold text-black dark:text-white">Full Consent</span>
-                          <span className="text-[11px] text-black/40 dark:text-white/40 block leading-normal italic">Happy to be filmed and shared publicly.</span>
-                        </div>
-                      </label>
-                      <label className="flex items-start gap-4 cursor-pointer group">
-                        <input type="radio" name="mediaConsent" value="none" checked={formData.mediaConsent === "none"} onChange={handleChange} className="mt-1 accent-black dark:accent-white h-4 w-4" />
-                        <div className="space-y-1">
-                          <span className="text-[12px] font-bold text-black dark:text-white flex items-center gap-2"><EyeOff className="w-3.5 h-3.5" /> No Consent (Privacy Zone)</span>
-                          <span className="text-[11px] text-black/40 dark:text-white/40 block leading-normal italic">Please seat me in a camera-free zone.</span>
-                        </div>
-                      </label>
                     </div>
                   </div>
                 </motion.div>
