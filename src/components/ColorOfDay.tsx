@@ -5,6 +5,18 @@ import { config } from "@/config";
 
 const colors = config.colorOfDay;
 
+/** Relative luminance of a hex color (0 = black, 1 = white). */
+const luminance = (hex: string) => {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+};
+
+/** Returns true when a color is light enough to need dark foreground content. */
+const isLight = (hex: string) => luminance(hex) > 0.6;
+
 export const ColorOfDay = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -67,7 +79,7 @@ export const ColorOfDay = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex justify-center gap-6 md:gap-10 mb-12"
+          className="flex flex-wrap justify-center gap-4 md:gap-6 mb-12"
         >
           {colors.map((color, index) => (
             <motion.button
@@ -75,10 +87,10 @@ export const ColorOfDay = () => {
               onClick={() => setActiveColor(index)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`group relative flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-500 ${
+              className={`group relative flex flex-col items-center gap-4 px-6 py-7 rounded-2xl backdrop-blur-md transition-all duration-500 ${
                 activeColor === index
-                  ? "bg-white/10 backdrop-blur-md border border-white/20"
-                  : "hover:bg-white/5"
+                  ? "bg-white/10 border border-white/20"
+                  : "bg-white/5 border border-white/10 hover:bg-white/[0.07]"
               }`}
             >
               {/* Color circle */}
@@ -86,9 +98,7 @@ export const ColorOfDay = () => {
                 className={`relative w-16 h-16 md:w-20 md:h-20 rounded-full transition-all duration-500 ${
                   activeColor === index
                     ? `ring-2 ring-offset-4 ring-offset-background ${
-                        color.hex === "#FFFFFF"
-                          ? "ring-gray-400"
-                          : "ring-[#C4849A]"
+                        isLight(color.hex) ? "ring-gray-400" : "ring-[#C4849A]"
                       }`
                     : ""
                 }`}
@@ -100,16 +110,16 @@ export const ColorOfDay = () => {
                       : "none",
                 }}
               >
-                {color.hex === "#FFFFFF" && (
-                  <div className="absolute inset-0 rounded-full border border-foreground/20" />
-                )}
-                <motion.div
-                  initial={false}
-                  animate={{ scale: activeColor === index ? 1 : 0 }}
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <Palette className="w-6 h-6 text-foreground/70" />
-                </motion.div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Palette
+                    className="w-6 h-6"
+                    style={{
+                      color: isLight(color.hex)
+                        ? "rgba(0,0,0,0.55)"
+                        : "rgba(255,255,255,0.8)",
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Color info */}
@@ -121,88 +131,6 @@ export const ColorOfDay = () => {
               </div>
             </motion.button>
           ))}
-        </motion.div>
-
-        {/* Image Gallery */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="grid grid-cols-2 gap-4 md:gap-8">
-            {colors[activeColor].images.map((image, index) => (
-              <motion.div
-                key={`${activeColor}-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="relative group"
-              >
-                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                  {/* Gradient overlay */}
-                  <div
-                    className="absolute inset-0 opacity-20 mix-blend-overlay z-10 pointer-events-none"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors[activeColor].hex}40, transparent)`,
-                    }}
-                  />
-
-                  {/* Image */}
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    loading="eager"
-                    className="w-full aspect-[3/4] object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  />
-
-                  {/* Decorative corners */}
-                  <div className="absolute top-3 left-3 w-6 h-6 border-l-2 border-t-2 border-white/30 rounded-tl-lg" />
-                  <div className="absolute top-3 right-3 w-6 h-6 border-r-2 border-t-2 border-white/30 rounded-tr-lg" />
-                  <div className="absolute bottom-3 left-3 w-6 h-6 border-l-2 border-b-2 border-white/30 rounded-bl-lg" />
-                  <div className="absolute bottom-3 right-3 w-6 h-6 border-r-2 border-b-2 border-white/30 rounded-br-lg" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Color description */}
-          <motion.p
-            key={activeColor}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mt-8 text-muted-foreground italic font-serif text-lg"
-          >
-            "{colors[activeColor].description}"
-          </motion.p>
-        </motion.div>
-
-        {/* Bottom note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="text-center mt-12"
-        >
-          <div className="inline-flex items-center gap-8 px-6 py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-sm">
-            {colors.map((color, index) => (
-              <div key={color.name} className="flex items-center gap-2">
-                {index > 0 && (
-                  <span className="text-xs tracking-widest uppercase text-muted-foreground">or</span>
-                )}
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor: color.hex,
-                    ...(color.hex === "#FFFFFF"
-                      ? { border: "1px solid rgba(0,0,0,0.2)" }
-                      : {}),
-                  }}
-                />
-              </div>
-            ))}
-          </div>
         </motion.div>
       </div>
     </section>

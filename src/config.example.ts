@@ -17,15 +17,6 @@ export const config = {
    */
   eventStartUTC: "YYYY-MM-DDTHH:MM:SSZ",
   eventEndUTC:   "YYYY-MM-DDTHH:MM:SSZ",
-  /** Doors/seating open — used for the "Please be seated" note */
-  seatingStartUTC: "YYYY-MM-DDTHH:MM:SSZ",
-
-  /** Human-readable date shown in the event details card */
-  eventDateDisplay: "Month DD, YYYY",
-  /** Human-readable day shown as subtext */
-  eventDayDisplay: "Saturday",
-  /** Seating instruction copy */
-  seatingCopy: "Please be seated · Ceremony begins at [TIME] [TZ]",
 
   /** RSVP deadline displayed in the form */
   rsvpDeadlineDisplay: "Month DD, YYYY",
@@ -42,9 +33,25 @@ export const config = {
   /** Year shown in the "Est." badge */
   establishmentYear: "YYYY",
 
-  // ── Venue ───────────────────────────────────────────────────────────────────
-  venueDisplay: "Private Location in [City], [Country]",
-  venueSubtext: "Address sent upon RSVP approval",
+  // ── Ceremonies ──────────────────────────────────────────────────────────────
+  /**
+   * Each entry renders its own section in the Event Details block, with a grid
+   * of cards (Date, Time, Venue, and an optional Reception). Add as many as you
+   * like. `timeUTC` is used to display the ceremony time in the viewer's locale.
+   */
+  ceremonies: [
+    {
+      title: "Ceremony Name",
+      dateDisplay: "Month DD, YYYY",
+      dayDisplay: "Saturday",
+      timeUTC: "YYYY-MM-DDTHH:MM:SSZ",
+      timeCopy: "Please be seated · Ceremony begins at [TIME] [TZ]",
+      venue: "Private Location in [City], [Country]",
+      venueSubtext: "Address sent upon RSVP approval",
+      /** Set to null to hide the Reception card for this ceremony. */
+      reception: { value: "Reception Venue", subtext: "To Follow Immediately" } as { value: string; subtext: string } | null,
+    },
+  ],
 
   // ── Travel & local info ─────────────────────────────────────────────────────
   airport: {
@@ -79,7 +86,11 @@ export const config = {
     { label: "Transport Line 2", url: "https://example.com" },
   ],
 
-  /** Google Maps embed src for the arrival airport / area */
+  /**
+   * Google Maps embed src for the arrival airport / area.
+   * Use the keyless embed form (renders Open-in-Maps + zoom controls):
+   *   https://maps.google.com/maps?q=YOUR+AIRPORT+NAME&z=12&output=embed
+   */
   mapEmbedSrc: "",
 
   /** YouTube links shown in the travel guide. Add as many as you like. */
@@ -105,9 +116,8 @@ export const config = {
 
   // ── Dress code / Color of the Day ───────────────────────────────────────────
   /**
-   * Each entry becomes a selectable color swatch with two outfit photos.
-   * Add your own images to src/assets/ and update the paths below.
-   * You can have any number of color entries.
+   * Each entry becomes a color swatch card showing the color name and hex code.
+   * Add as many color entries as you like.
    */
   /**
    * Optional dress code warning shown in red beneath the color swatches.
@@ -116,24 +126,8 @@ export const config = {
   colorOfDayDisclaimer: "" as string | null,
 
   colorOfDay: [
-    {
-      name: "Color Name",
-      hex: "#HEXCODE",
-      description: "A short description of the color",
-      images: [
-        { src: "/src/assets/placeholder-person-1.svg", alt: "Partner 1 in [color]" },
-        { src: "/src/assets/placeholder-person-2.svg", alt: "Partner 2 in [color]" },
-      ],
-    },
-    {
-      name: "Color Name 2",
-      hex: "#HEXCODE2",
-      description: "A short description of the second color",
-      images: [
-        { src: "/src/assets/placeholder-person-1.svg", alt: "Partner 1 in [color 2]" },
-        { src: "/src/assets/placeholder-person-2.svg", alt: "Partner 2 in [color 2]" },
-      ],
-    },
+    { name: "Color Name",   hex: "#HEXCODE" },
+    { name: "Color Name 2", hex: "#HEXCODE2" },
   ],
 
   // ── Music ────────────────────────────────────────────────────────────────────

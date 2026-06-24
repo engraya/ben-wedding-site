@@ -53,8 +53,8 @@ export const TravelGuide = () => {
                   <div className="space-y-4">
                     <h5 className="text-[11px] font-black uppercase text-black/60 dark:text-white/40 tracking-[0.2em]">Option A: Flight</h5>
                     <p className="text-xs text-black/80 dark:text-white/80 leading-relaxed uppercase tracking-wider font-bold">
-                      {config.airport.name} <span className="text-black dark:text-white">({config.airport.iata})</span>.
-                      Carrier: <span className="bg-black dark:bg-white text-white dark:text-black px-1 font-black">{config.airlineName}</span>.
+                      {config.airport.name}.
+                      Carrier: <span className="bg-black text-white px-1 font-black">{config.airlineName}</span>
                     </p>
                     <a href={config.airlineBookingUrl} target="_blank" className="inline-flex items-center gap-2 text-[10px] font-black uppercase border border-black dark:border-white px-5 py-2.5 rounded-lg hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
                       Book {config.airlineName} <ArrowRight className="w-3 h-3" />
@@ -124,7 +124,7 @@ export const TravelGuide = () => {
                   <h4 className="text-xl font-black uppercase italic text-black/90 dark:text-white/90">Local Transit</h4>
                 </div>
                 <p className="text-xs text-black/60 dark:text-white/60 leading-relaxed font-medium mb-6">
-                  Red AKTC buses and Keke are the local standard.
+                  Blue & White buses and Keke are the local standard.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-[10px] font-bold uppercase tracking-wider text-black/60 dark:text-white/40">
@@ -148,7 +148,7 @@ export const TravelGuide = () => {
               <h3 className="text-[9px] font-black uppercase tracking-[0.5em] mb-8 text-black/30 dark:text-white/30">Accommodation</h3>
               <ul className="grid grid-cols-1 gap-3 text-[11px] font-black uppercase tracking-widest leading-none text-black dark:text-white">
                 {config.hotels.map((hotel, i) => (
-                  <li key={i} className={i === config.hotels.length - 1 ? "border-t border-gray-200 dark:border-white/10 pt-3 italic" : ""}>
+                  <li key={i} className={i === config.hotels.length - 1 ? "" : ""}>
                     {hotel}
                   </li>
                 ))}
@@ -187,16 +187,18 @@ export const TravelGuide = () => {
             </div>
 
             {/* MAP EMBED */}
-            <div className="md:col-span-8 h-[350px] md:h-auto relative border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-xl group">
+            <div className="md:col-span-8 h-[350px] md:h-auto relative border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-xl">
               <iframe
                 src={config.mapEmbedSrc}
-                className="absolute inset-0 w-full h-full grayscale brightness-50 contrast-125 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700"
+                title={`${config.airport.name} (${config.airport.iata})`}
+                className="absolute inset-0 w-full h-full"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
-              <div className="absolute top-4 left-4 p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md border border-gray-300 dark:border-white/10 rounded-lg pointer-events-none">
+              {/* <div className="absolute bottom-4 left-4 p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md border border-gray-300 dark:border-white/10 rounded-lg pointer-events-none">
                  <p className="text-[9px] uppercase font-bold text-black/50 dark:text-white/50 tracking-widest">Arrival Port</p>
                  <p className="text-sm font-black italic uppercase text-black dark:text-white">{config.airport.name} ({config.airport.iata})</p>
-              </div>
+              </div> */}
             </div>
           </div>
 

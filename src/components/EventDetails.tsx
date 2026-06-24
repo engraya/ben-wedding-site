@@ -26,36 +26,45 @@ const formatEventTime = (isoString: string) => {
   });
 };
 
-export const EventDetails = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+type Ceremony = (typeof config.ceremonies)[number];
 
+const buildDetails = (ceremony: Ceremony) => {
   const details = [
     {
       icon: Calendar,
       label: "Date",
-      value: config.eventDateDisplay,
-      subtext: config.eventDayDisplay,
+      value: ceremony.dateDisplay,
+      subtext: ceremony.dayDisplay,
     },
     {
       icon: Clock,
       label: "Time",
-      value: formatEventTime(config.seatingStartUTC),
-      subtext: config.seatingCopy,
+      value: formatEventTime(ceremony.timeUTC),
+      subtext: ceremony.timeCopy,
     },
     {
       icon: MapPin,
       label: "Venue",
-      value: config.venueDisplay,
-      subtext: config.venueSubtext,
-    },
-    {
-      icon: Wine,
-      label: "Reception",
-      value: "Mocktails & Dinner",
-      subtext: "To Follow Immediately",
+      value: ceremony.venue,
+      subtext: ceremony.venueSubtext,
     },
   ];
+
+  if (ceremony.reception) {
+    details.push({
+      icon: Wine,
+      label: "Reception",
+      value: ceremony.reception.value,
+      subtext: ceremony.reception.subtext,
+    });
+  }
+
+  return details;
+};
+
+export const EventDetails = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const eventTitle = `Wedding of ${config.partner1} & ${config.partner2}`;
   const startTime = config.eventStartUTC.replace(/[-:]/g, "").replace(".000", "").replace("Z", "Z");
@@ -86,58 +95,73 @@ export const EventDetails = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1 }}
-          className="text-center mb-6 md:mb-8"
-        >
-          <motion.span className="inline-block text-xs tracking-[0.4em] uppercase text-muted-foreground mb-2">
-            ✦ The Details ✦
-          </motion.span>
-          <h2 className="font-display text-5xl md:text-6xl lg:text-8xl mb-3 epic-text tracking-tight">
-            When & Where
-          </h2>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 1.2, delay: 0.4 }}
-            className="h-px w-24 mx-auto bg-foreground/20"
-          />
-        </motion.div>
+        {config.ceremonies.map((ceremony, ceremonyIndex) => {
+          const details = buildDetails(ceremony);
 
-        {/* DETAILS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
-          {details.map((detail, index) => (
-            <motion.div
-              key={detail.label}
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              className="group h-full"
-            >
-              <div className="h-full p-4 md:p-6 text-center relative overflow-hidden border border-white/10 rounded-xl bg-white/5 backdrop-blur-md shadow-xl transition-colors duration-500 hover:bg-white/10">
-                <motion.div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          return (
+            <div key={ceremony.title} className="mb-10">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 1, delay: ceremonyIndex * 0.15 }}
+                className="text-center mb-6 md:mb-8"
+              >
+                {ceremonyIndex === 0 && (
+                  <motion.span className="inline-block text-xs tracking-[0.4em] uppercase text-muted-foreground mb-2">
+                    ✦ The Details ✦
+                  </motion.span>
+                )}
+                <h2 className="font-display text-5xl md:text-6xl lg:text-8xl mb-3 epic-text tracking-tight">
+                  {ceremony.title}
+                </h2>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={isInView ? { scaleX: 1 } : {}}
+                  transition={{ duration: 1.2, delay: 0.4 + ceremonyIndex * 0.15 }}
+                  className="h-px w-24 mx-auto bg-foreground/20"
+                />
+              </motion.div>
 
-                <div className="relative inline-flex items-center justify-center w-12 h-12 mb-4 border border-foreground/20 rounded-full">
-                  <detail.icon className="w-4 h-4 text-foreground/70" />
-                </div>
+              {/* DETAILS GRID */}
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 ${
+                  details.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+                }`}
+              >
 
-                <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/80 mb-1 font-medium">
-                  {detail.label}
-                </p>
+                {details.map((detail, index) => (
+                  <motion.div
+                    key={detail.label}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+                    className="group h-full"
+                  >
+                    <div className="h-full p-4 md:p-6 text-center relative overflow-hidden border border-white/10 rounded-xl bg-white/5 backdrop-blur-md shadow-xl transition-colors duration-500 hover:bg-white/10">
+                      <motion.div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                <p className="font-display text-lg md:text-xl mb-0.5 text-foreground font-light">
-                  {detail.value}
-                </p>
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 mb-4 border border-foreground/20 rounded-full">
+                        <detail.icon className="w-4 h-4 text-foreground/70" />
+                      </div>
 
-                <p className="text-sm text-muted-foreground/60">
-                  {detail.subtext}
-                </p>
+                      <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/80 mb-1 font-medium">
+                        {detail.label}
+                      </p>
+
+                      <p className="font-display text-lg md:text-xl mb-0.5 text-foreground font-light">
+                        {detail.value}
+                      </p>
+
+                      <p className="text-sm text-muted-foreground/60">
+                        {detail.subtext}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          );
+        })}
 
         {/* ADD TO CALENDAR */}
         <motion.div

@@ -38,7 +38,7 @@ export const Navigation = () => {
       <div className="wedding-container flex items-center justify-between">
         {/* Logo */}
         <motion.a href="#" whileHover={{ scale: 1.05 }} className="font-display text-xl md:text-2xl relative group">
-          <span className="relative z-10">.{config.partner1[0]}{config.partner2[0]}</span>
+          <span className="relative z-10">.{config.partner1[0]}{config.partner2[0]}❤️</span>
           <motion.span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-500" />
         </motion.a>
 
