@@ -19,7 +19,7 @@ export const config = {
   eventEndUTC:   "2026-08-29T17:00:00Z",
 
   /** RSVP deadline displayed in the form */
-  rsvpDeadlineDisplay: "August 15, 2026",
+  rsvpDeadlineDisplay: "August 24, 2026",
   /**
    * UTC ISO date after which the RSVP form closes.
    * Set to a specific date string, or null to close on the wedding day.
