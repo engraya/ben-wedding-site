@@ -324,15 +324,6 @@ export const RSVPForm = () => {
               <p>Seating is strictly limited to <span className="text-black dark:text-white font-medium">{config.guestCapacity} guests</span>.</p>
             )}
           </div>
-
-          {formData.attendanceType === "physical" && (
-            <div className="mt-8 mx-auto max-w-[460px] bg-gray-100/30 dark:bg-white/5 border border-gray-300 dark:border-white/5 rounded-xl p-5 flex items-start gap-4 text-left shadow-2xl transition-colors">
-              <Info className="w-5 h-5 text-black/80 dark:text-white/80 flex-shrink-0 mt-0.5" />
-              <p className="text-black dark:text-white text-[11px] md:text-xs leading-relaxed">
-                <span className="font-bold">IMPORTANT:</span> As this is an intimate celebration, we kindly ask that you notify us immediately if your plans change by replying to your seat confirmation email so we may release your seat to others.
-              </p>
-            </div>
-          )}
         </div>
 
         {/* FORM */}
