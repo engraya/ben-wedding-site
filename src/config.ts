@@ -112,17 +112,18 @@ export const config = {
 
   // ── Gift registry ────────────────────────────────────────────────────────────
   bankAccounts: [
-    { currency: "NGN (Naira)",  bank: "Opay MFB", account: "8161790418", name: "Benjamin Frank" },
-    { currency: "USD (Dollar)", bank: "Your Bank Name", account: "0000000000", name: "Account Holder Name" },
+    { currency: "Naira", bank: "Opay MFB", account: "8161790418", name: "Benjamin Frank" },
   ],
 
   crypto: {
-    btcOnchain:   "YOUR_BTC_ADDRESS",
+    btcOnchain:   "bc1qjh8k8vzv9na5cmspn4k60ts80y5rxgh2qy004u",
     btcLightning: "your@lightning.address",
-    /** Single EVM-compatible address used for Base, BSC, Assetchain */
-    evmAddress:   "0xYOUR_EVM_ADDRESS",
-    solanaAddress:"YOUR_SOLANA_ADDRESS",
-    tronAddress:  "YOUR_TRON_ADDRESS",
+    /** EVM-compatible address for cNGN (Base, BSC) */
+    evmAddress:   "0x406Dd8a99Deda7CC01A1dB738AA80B39565F9635",
+    /** EVM-compatible address for USDT/USDC (Base, BSC) */
+    usdtEvmAddress: "0x35309f8499330a430440C59A3C0ABE00cCb86860",
+    solanaAddress:"FcyBMyuwST1afLDTwHr9EoyQazZjZ5wfzUrRWynBWKe",
+    tronAddress:  "TPfLZr8kXP71KssJdcAuDSkEcxxUDeAqnF",
   },
 
   // ── Dress code / Color of the Day ───────────────────────────────────────────
